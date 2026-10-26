@@ -111,4 +111,20 @@ formFiltros.addEventListener('submit', (e) => {
 // y también el botón Reintentar.
 // TODO
 
+
+lista.addEventListener('click', (e) => {
+  const boton = e.target.closest('button[data-id]');
+  if (!boton) return;
+
+  const id = Number(boton.dataset.id);
+
+  if (vistos.includes(id)) {
+    vistos = vistos.filter((v) => v !== id);
+  } else {
+    vistos.push(id);
+  }
+
+  guardarVistos(vistos);
+  render();
+});
 cargar();
