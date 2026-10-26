@@ -17,7 +17,29 @@ const selectTemporada = document.querySelector('#filtro-temporada');
 
 // R3 · Recibe UN episodio y devuelve el HTML de su tarjeta (modelos 1 y 2 de index.html).
 const tarjetaHTML = (episodio) => {
-  // TODO
+  const esVisto = vistos.includes(episodio.id);
+
+  const clasesArticle = esVisto
+    ? 'flex flex-col gap-2 rounded-2xl bg-white p-5 shadow ring-2 ring-emerald-500 dark:bg-slate-800'
+    : 'flex flex-col gap-2 rounded-2xl bg-white p-5 shadow dark:bg-slate-800';
+
+  const clasesBoton = esVisto
+    ? 'mt-auto rounded-lg bg-emerald-600 py-2 font-semibold text-white hover:bg-emerald-700'
+    : 'mt-auto rounded-lg bg-indigo-600 py-2 font-semibold text-white hover:bg-indigo-700';
+
+  const textoBoton = esVisto ? '✓ Visto' : 'Marcar como visto';
+
+  return `
+    <article class="${clasesArticle}">
+      <span class="w-fit rounded-full bg-indigo-100 px-2.5 py-0.5 text-xs font-semibold text-indigo-700">${episodio.episode}</span>
+      <h3 class="text-lg font-bold text-slate-900 dark:text-white">${episodio.name}</h3>
+      <p class="text-sm text-slate-500">Emitido: ${episodio.air_date}</p>
+      <p class="text-sm text-slate-500">${episodio.characters.length} personajes</p>
+      <button type="button" data-id="${episodio.id}" class="${clasesBoton}">
+        ${textoBoton}
+      </button>
+    </article>
+  `;
 };
 
 // R2 · Estado de carga y estado de error (modelos 3 y 4 de index.html).
@@ -42,7 +64,20 @@ const mostrarError = (mensaje) => {
 // R3 + R4 + R5 · ESTADO → pantalla: filtra, pinta las tarjetas (o el estado vacío, modelo 5)
 // y actualiza el contador con el formato «7 de 20 episodios · 187 personajes».
 const render = () => {
-  // TODO
+  // Nota: Si aún no tienes la lógica de filtros del R4, puedes usar temporalmente 'episodios' directo.
+  // Pero como ya dejamos filtrado preparado, funcionará perfecto.
+  const filtrados = filtrarEpisodios(episodios, filtros);
+
+  if (filtrados.length === 0) {
+    lista.innerHTML = `
+      <p class="col-span-full rounded-2xl bg-white p-8 text-center text-slate-500">Ningún episodio coincide con la búsqueda.</p>
+    `;
+  } else {
+    lista.innerHTML = filtrados.map(tarjetaHTML).join('');
+  }
+
+  const totalPersonajes = contarPersonajes(filtrados);
+  contador.textContent = `${filtrados.length} de ${episodios.length} episodios · ${totalPersonajes} personajes`;
 };
 
 // R2 · Pide los episodios: muestra cargando; si todo sale bien guarda y pinta;
